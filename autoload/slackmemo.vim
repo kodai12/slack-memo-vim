@@ -525,8 +525,25 @@ function! s:SlackMemoDelete(ts) abort
   redraw | echon 'Deleted!!'
 endfunction
 
+function! slackreminder#set(text, time) abort
+  let res = webapi#http#post(s:slackapi . '/reminders.add', {
+        \ 'token': g:slack_memo_token,
+        \ 'text': a:text,
+        \ 'time': a:time,
+        \ 'user': 'me'
+        \ })
+  let res = webapi#json#decode(res.content)
 
+  if !res.ok
+    redraw
+    echomsg 'Bad request...'
+    return
+  endif
 
+  let g:debug_res = res
+
+  redraw | echon 'Set Remind!!'
+endfunction
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
